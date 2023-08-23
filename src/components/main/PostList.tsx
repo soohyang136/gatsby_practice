@@ -1,6 +1,12 @@
 import React, { FunctionComponent } from "react";
 import styled from "@emotion/styled";
 import PostItem from "./PostItem";
+import { graphql } from "gatsby";
+import { PostListItemType } from "../../types/PostItem.type";
+
+type PostListProps = {
+    posts: PostListItemType[]
+}
 
 const POST_ITEM_DATA = {
     title: 'Post Item Title',
@@ -20,17 +26,33 @@ const PostListWrapper = styled.div`
     width: 768px;
     margin: 0 auto;
     padding: 50px 0 100px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        width: 100%;
+        padding: 50px 20px;
+    }
 `
 
-const PostList: FunctionComponent= function() {
+const PostList: FunctionComponent<PostListProps> = function({
+    posts,
+}) {
     return (
         <PostListWrapper>
-            <PostItem {...POST_ITEM_DATA} />
-            <PostItem {...POST_ITEM_DATA} />
-            <PostItem {...POST_ITEM_DATA} />
-            
+            {posts.map(
+                ({
+                    node: { id, frontmatter },
+                }: PostListItemType) => (
+                    <PostItem
+                        {...frontmatter}
+                        link="https://www.google.co.kr/"
+                        key={id}
+                    />
+                )
+            )}    
         </PostListWrapper>
     )
 }
 
 export default PostList;
+
