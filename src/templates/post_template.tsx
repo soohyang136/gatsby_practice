@@ -1,4 +1,6 @@
 import Template from "components/common/Template";
+import CommentWidget from "components/post/CommentWidget";
+import PostContent from "components/post/PostContent";
 import PostHead from "components/post/PostHead";
 import { graphql } from "gatsby";
 import React, { FunctionComponent } from "react";
@@ -41,6 +43,8 @@ const PostTemplate: FunctionComponent<PostTemplateProps> = function({
                 categories={categories}
                 thumbnail={gatsbyImageData}
             />
+            <PostContent html={html} />
+            <CommentWidget />
         </Template>
     )
 }
