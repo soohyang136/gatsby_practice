@@ -9,6 +9,7 @@ import { graphql } from 'gatsby'
 import { PostListItemType } from '../types/PostItem.type'
 import { IGatsbyImageData } from 'gatsby-plugin-image'
 import queryString, { ParsedQuery } from 'query-string'
+import Template from 'components/common/Template'
 
 type IndexPageProps = {
     location: {
@@ -18,21 +19,23 @@ type IndexPageProps = {
       allMarkdownRemark: {
         edges: PostListItemType[]
       }
+      file: {
+        childImageSharp: {
+          gatsbyImageData: IGatsbyImageData
+        }
+        publicURL: string
+      }
     }
   }
-
-const Container = styled.div`
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-`
 
 const IndexPage: FunctionComponent<IndexPageProps> = function ({
     location: { search },
     data: {
         allMarkdownRemark: { edges },
-        
-    }
+        file: {
+          childImageSharp: { gatsbyImageData }
+        },
+    },
 }) {
     const parsed: ParsedQuery<string> = queryString.parse(search);
     const selectedCategory: string = typeof parsed.category !== 'string' || !parsed.category
@@ -63,13 +66,13 @@ const IndexPage: FunctionComponent<IndexPageProps> = function ({
         [],
       );
   return (
-    <Container>
+    <Template>
         <GlobalStyle />
-        <Introduction />
+        <Introduction profileImage={gatsbyImageData} />
         <CategoryList selectedCategory={selectedCategory} categoryList={categoryList} />
         <PostList selectedCategory={selectedCategory} posts={edges} />
         <Footer />
-    </Container>
+    </Template>
   )
 }
 
@@ -83,17 +86,28 @@ export const getPostList = graphql`
       edges {
         node {
           id
+          fields {
+            slug
+          }
           frontmatter {
             title
             summary
             date(formatString: "YYYY.MM.DD.")
             categories
             thumbnail {
-              publicURL
+              childImageSharp {
+                gatsbyImageData(width: 768, height: 400)
+              }
             }
           }
         }
       }
+    }
+    file(name: { eq: "profile-image" }) {
+      childImageSharp {
+        gatsbyImageData(width: 120, height: 120)
+      }
+      publicURL
     }
   }
 `
